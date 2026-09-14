@@ -2,6 +2,10 @@ from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import os
 
+import threading
+import webview
+import sys
+
 app = Flask(__name__)
 CSV_FILE = 'historico_peso.csv'
 
@@ -31,4 +35,17 @@ def save_pesos():
     return jsonify({"status": "ok"})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # 1. Função para rodar o Flask em segundo plano
+    def run_flask():
+        # use_reloader=False é essencial para rodar junto com a interface
+        app.run(port=5000, debug=False, use_reloader=False)
+    
+    # Inicia o servidor backend
+    threading.Thread(target=run_flask, daemon=True).start()
+    
+    # 2. Abre a janela do aplicativo (estilo software nativo)
+    webview.create_window('Project-42', 'http://127.0.0.1:5000', width=1280, height=850)
+    webview.start()
+    
+    # 3. Quando você clica no "X" para fechar a janela, o script chega aqui e mata o Flask
+    sys.exit()
