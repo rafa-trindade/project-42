@@ -506,10 +506,10 @@
 
     if(resto === 0 && diasProjeto > 0){
       treinosRealizados = ciclos*3;
-      statusHoje = 'descanso (amanhã é treino 1)';
-    } else if(resto === 1){ statusHoje = 'treino 1'; }
-    else if(resto === 2){ statusHoje = 'treino 2'; }
-    else if(resto === 3){ statusHoje = 'treino 3 (amanhã é descanso)'; }
+      statusHoje = 'descanso (amanhã é Treino A|D)';
+    } else if(resto === 1){ statusHoje = 'Treino A|D'; }
+    else if(resto === 2){ statusHoje = 'Treino B|E'; }
+    else if(resto === 3){ statusHoje = 'Treino C|F (amanhã é descanso)'; }
     else { statusHoje = 'aguardando início'; }
 
     document.getElementById('hdrDate').textContent = toBR(hoje);
