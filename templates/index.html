@@ -65,6 +65,24 @@
     letter-spacing: 0.02em;
   }
   .term-titlebar .path::before{ content:"~/"; color: var(--text-faint); }
+  .titlebar-right{ display:flex; align-items:center; gap:12px; }
+  .refresh-btn{
+    display:flex; align-items:center; gap:5px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: .02em;
+    padding: 3px 9px;
+    cursor: pointer;
+  }
+  .refresh-btn:hover{ border-color: var(--accent); color: var(--accent); }
+  .refresh-btn:focus-visible{ outline: 2px solid var(--accent); outline-offset: 1px; }
+  .refresh-btn:disabled{ opacity: .5; cursor: default; border-color: var(--border); color: var(--text-faint); }
+  .refresh-icon{ display:inline-block; }
+  .refresh-icon.spin{ animation: spin .6s linear; }
+  @keyframes spin{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
   .term-body{
     padding: 16px 18px 18px;
   }
@@ -290,7 +308,12 @@
   <div class="term-header">
     <div class="term-titlebar">
       <span class="path">project-42/status.log</span>
-      <span id="hdrDate"></span>
+      <div class="titlebar-right">
+        <span id="hdrDate"></span>
+        <button id="btnRefresh" class="refresh-btn" title="Recarregar dados do servidor">
+          <span class="refresh-icon">⟳</span> atualizar
+        </button>
+      </div>
     </div>
     <div class="term-body">
       <h1 class="term-h1">PROJECT-42<span class="cursor"></span></h1>
@@ -459,10 +482,7 @@
   }
 
   // ---------------- storage ----------------
-  // Usa localStorage do navegador (funciona abrindo o .html direto, sem servidor).
-  // Fica preso a este navegador + este caminho de arquivo — por isso existe
-  // exportar/importar CSV como backup real, portátil.
-  let memoryFallback = null; // usado só se localStorage estiver indisponível
+  // Lê e grava via API do Flask (app.py), que persiste em historico_peso.csv.
 
   async function loadEntries(){
     try {
@@ -818,6 +838,22 @@
       ev.target.value = '';
     };
     reader.readAsText(file);
+  });
+
+  // ---------------- atualizar ----------------
+  document.getElementById('btnRefresh').addEventListener('click', async () => {
+    const btn = document.getElementById('btnRefresh');
+    const icon = btn.querySelector('.refresh-icon');
+    btn.disabled = true;
+    icon.classList.remove('spin');
+    void icon.offsetWidth; // reinicia a animação se clicado em sequência
+    icon.classList.add('spin');
+    try{
+      entries = await loadEntries();
+      render();
+    } finally {
+      btn.disabled = false;
+    }
   });
 
   // ---------------- init ----------------
