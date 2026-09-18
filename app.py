@@ -10,10 +10,7 @@ app = Flask(__name__)
 CSV_FILE = 'historico_peso.csv'
 
 if not os.path.exists(CSV_FILE):
-    df_init = pd.DataFrame({
-        "Data": ["2026-08-30", "2026-09-06", "2026-09-13"],
-        "Peso": [139.0, 133.9, 132.8]
-    })
+    df_init = pd.DataFrame(columns=["Data", "Peso"])
     df_init.to_csv(CSV_FILE, index=False)
 
 @app.route('/')
